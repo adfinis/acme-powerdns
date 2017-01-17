@@ -1,0 +1,14 @@
+# .gitignore
+
+*.swp
+*.pyc
+*.egg-info/
+__pycache__/
+/.cache
+/.coverage
+/.deps
+/.vagrant
+/build
+/doc/_build
+/.python-version
+/.venv
