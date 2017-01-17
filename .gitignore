@@ -12,3 +12,5 @@ __pycache__/
 /doc/_build
 /.python-version
 /.venv
+
+/acme_powerdns/settings.py
