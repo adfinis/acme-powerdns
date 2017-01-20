@@ -30,6 +30,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'acme',
+        'dnspython',
     ],
     extras_require={
         'test': ['pytest'],
