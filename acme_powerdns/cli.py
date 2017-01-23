@@ -21,7 +21,7 @@ def main():
     )
 
     # create an ACME account
-    ac.create_account(settings.ACCOUNT_KEY)
+    account_key = ac.create_account(settings.ACCOUNT_KEY)
 
     # request a challenge
     authzr, authzr_response = ac.request_challenges(settings.FQDN)

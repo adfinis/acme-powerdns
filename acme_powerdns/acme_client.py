@@ -44,6 +44,7 @@ class Client:
         )
         self._acme.agree_to_tos(self._regr)
         self._logging.debug(self._regr)
+        return account_key
 
     def request_challenges(self, domain):
         authzr = self._acme.request_challenges(
