@@ -3,7 +3,7 @@
 import json
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 import OpenSSL
 
 from acme import client
@@ -20,16 +20,22 @@ class Client:
         self._logging = logging
         self._acme = None
 
-    def create_account(self, bits):
+    def create_account(self, keyfile):
         # generate_private_key requires cryptography>=0.5
-        key = jose.JWKRSA(
-            key=rsa.generate_private_key(
-                public_exponent = 65537,
-                key_size = bits,
-                backend = default_backend()
-            )
-        )
-        self._acme = client.Client(DIRECTORY_URL, key)
+        with open(keyfile, 'rb') as kf:
+            key_contents = kf.read()
+            try:
+                account_key = jose.JWKRSA(
+                    key=serialization.load_pem_private_key(
+                        key_contents,
+                        None,
+                        default_backend()
+                    )
+                )
+            except TypeError as e:
+                self._logging.error(e)
+
+        self._acme = client.Client(DIRECTORY_URL, account_key)
 
         self._regr = self._acme.register()
         self._logging.info(
