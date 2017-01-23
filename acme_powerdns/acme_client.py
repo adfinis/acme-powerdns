@@ -83,3 +83,39 @@ class Client:
                     error
                 )
             )
+
+
+def _monkeypatch_post(
+        self,
+        url,
+        obj,
+        content_type=client.ClientNetwork.JSON_CONTENT_TYPE,
+        check_response=True,
+        **kwargs):
+    data = self._wrap_in_jws(obj, self._get_nonce(url))
+    response = self._send_request('POST', url, data=data, **kwargs)
+    self._add_nonce(response)
+    if check_response:
+        return self._check_response(response, content_type=content_type)
+    else:
+        return response
+
+
+def _monkeypatch_register(self, new_reg=None):
+    new_reg = new_reg or messages.NewRegistration()
+    response = self.net.post(
+        self.directory[new_reg],
+        new_reg,
+        check_response=False,
+    )
+    loc = None
+    if response.status_code == client.http_client.CONFLICT and \
+            response.headers.get('Location'):
+        reg = messages.UpdateRegistration()
+        loc = response.headers.get('Location')
+        response = self.net.post(loc, reg)
+    return self._regr_from_response(response, uri=loc)
+
+
+client.ClientNetwork.post = _monkeypatch_post
+client.Client.register = _monkeypatch_register
