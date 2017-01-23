@@ -4,6 +4,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 import OpenSSL
 
+from acme import challenges
 from acme import client
 from acme import messages
 from acme import jose
@@ -62,16 +63,19 @@ class Client:
                 return authzr.body.challenges[c[0]]
         return None
 
-    def respond_challenges(self, authzr, csr_file):
+    def answer_challenge(self, challb, chall_response):
+        self._acme.answer_challenge(challb, chall_response)
+
+    def request_cert(self, csr_file, authzrs):
         with open(csr_file, 'rb') as fp:
             csr = OpenSSL.crypto.load_certificate_request(
                 OpenSSL.crypto.FILETYPE_PEM,
                 fp.read()
             )
         try:
-            self._acme.request_issuance(
+            crt, updated_authzrs = self._acme.poll_and_request_issuance(
                 jose.util.ComparableX509(csr),
-                (authzr,),
+                authzrs,
             )
         except messages.Error as error:
             self._logging.error(
@@ -79,6 +83,9 @@ class Client:
                     error
                 )
             )
+        cert = [crt.body]
+        chain = self._acme.fetch_chain(crt)
+        return (cert, chain)
 
 
 def _monkeypatch_post(
