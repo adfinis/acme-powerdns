@@ -47,12 +47,9 @@ class Client:
         return account_key
 
     def request_challenges(self, domain):
-        authzr = self._acme.request_challenges(
-            identifier = messages.Identifier(
-                typ = messages.IDENTIFIER_FQDN,
-                value = domain,
-            ),
-            new_authzr_uri = self._regr.new_authzr_uri
+        authzr = self._acme.request_domain_challenges(
+            domain,
+            new_authzr_uri = self._regr.new_authzr_uri,
         )
         self._logging.debug(authzr)
 
