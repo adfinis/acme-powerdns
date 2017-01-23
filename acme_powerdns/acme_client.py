@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import json
-
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 import OpenSSL
@@ -57,11 +55,11 @@ class Client:
         return (authzr, authzr_response)
 
     def filter_challenges(self, authzr, authzr_response):
-        challenges = json.loads(authzr_response.content)['challenges']
-        for i in range(0, len(challenges)):
-            challenge = challenges.pop()
-            if challenge['type'] == 'dns-01':
-                return challenge['token']
+        for c in authzr.body.combinations:
+            if len(c) == 1 and isinstance(
+                    authzr.body.challenges[c[0]].chall,
+                    challenges.DNS01):
+                return authzr.body.challenges[c[0]]
         return None
 
     def respond_challenges(self, authzr, csr_file):
