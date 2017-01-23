@@ -78,9 +78,8 @@ class Client:
                 (authzr,),
             )
         except messages.Error as error:
-            print(
-                "This script is doomed to fail as no authorization "
-                "challenges are ever solved. Error from server: {0}".format(
+            self._logging.error(
+                "Error from server: {}".format(
                     error
                 )
             )

@@ -26,7 +26,6 @@ def main():
     # request a challenge
     authzr, authzr_response = ac.request_challenges(settings.FQDN)
     token = ac.filter_challenges(authzr, authzr_response)
-    logging.info(token)
 
     # create dns record
     nsupdate.create(
