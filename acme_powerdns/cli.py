@@ -31,7 +31,10 @@ logging.basicConfig(level=logging.INFO)
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
-    ac = acme_client.Client(logging)
+    ac = acme_client.Client(
+        logging,
+        settings.DIRECTORY_URL,
+    )
     nsupdate = dns.NSUpdate(
         logging,
         settings.TSIG_KEYID,
@@ -40,7 +43,9 @@ def main():
     )
 
     # create an ACME account
-    account_key = ac.create_account(settings.ACCOUNT_KEY)
+    account_key = ac.create_account(
+        settings.ACCOUNT_KEY,
+    )
 
     authzrs = list()
     for domain in settings.FQDN:

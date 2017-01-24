@@ -28,16 +28,24 @@ from acme import messages
 from acme import jose
 
 
-DIRECTORY_URL = 'https://acme-staging.api.letsencrypt.org/directory'
-
-
 class Client:
 
-    def __init__(self, logging):
+    def __init__(self, logging, directory_url):
+        """Initialize a new ACME client.
+
+        logging: a logging object.
+        directory_url: the ACME directory url (e.g. staging directory).
+        """
         self._logging = logging
         self._acme = None
+        self._directory_url = directory_url
 
     def create_account(self, keyfile):
+        """Create a new account on the directory server.
+        If the account exists, nothing will happen.
+
+        keyfile: file with the private RSA account key.
+        """
         # generate_private_key requires cryptography>=0.5
         with open(keyfile, 'rb') as kf:
             key_contents = kf.read()
@@ -52,7 +60,10 @@ class Client:
             except TypeError as e:
                 self._logging.error(e)
 
-        self._acme = client.Client(DIRECTORY_URL, account_key)
+        self._acme = client.Client(
+            self._directory_url,
+            account_key,
+        )
 
         self._regr = self._acme.register()
         self._logging.info(
