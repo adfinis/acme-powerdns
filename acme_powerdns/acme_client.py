@@ -53,9 +53,9 @@ class Client:
         self._logging.debug(authzr)
 
         authzr, authzr_response = self._acme.poll(authzr)
-        return (authzr, authzr_response)
+        return authzr
 
-    def filter_challenges(self, authzr, authzr_response):
+    def filter_challenges(self, authzr):
         for c in authzr.body.combinations:
             if len(c) == 1 and isinstance(
                     authzr.body.challenges[c[0]].chall,

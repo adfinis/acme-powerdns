@@ -27,10 +27,10 @@ def main():
     authzrs = list()
     for domain in settings.FQDN:
         # request a challenge
-        authzr, authzr_response = ac.request_challenges(domain)
+        authzr = ac.request_challenges(domain)
         authzrs.append(authzr)
 
-        challb = ac.filter_challenges(authzr, authzr_response)
+        challb = ac.filter_challenges(authzr)
         chall_response, chall_validation = challb.response_and_validation(
             account_key
         )
