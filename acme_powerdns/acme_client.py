@@ -117,13 +117,9 @@ class Client:
         return (cert, chain)
 
 
-def _monkeypatch_post(
-        self,
-        url,
-        obj,
-        content_type=client.ClientNetwork.JSON_CONTENT_TYPE,
-        check_response=True,
-        **kwargs):
+def _monkeypatch_post(self, url, obj,
+                      content_type=client.ClientNetwork.JSON_CONTENT_TYPE,
+                      check_response=True, **kwargs):
     data = self._wrap_in_jws(obj, self._get_nonce(url))
     response = self._send_request('POST', url, data=data, **kwargs)
     self._add_nonce(response)
