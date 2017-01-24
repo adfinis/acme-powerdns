@@ -87,7 +87,7 @@ class Client:
         """
         authzr = self._acme.request_domain_challenges(
             domain,
-            new_authzr_uri = self._regr.new_authzr_uri,
+            new_authzr_uri=self._regr.new_authzr_uri,
         )
         self._logging.debug(authzr)
 
