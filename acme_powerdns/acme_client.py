@@ -89,8 +89,8 @@ class Client:
         Args:
             keyfile: file with the private RSA account key.
         """
-        try:
-            with open(keyfile, 'rb') as kf:
+        with open(keyfile, 'rb') as kf:
+            try:
                 key_contents = kf.read()
                 account_key = jose.JWKRSA(
                     key=serialization.load_pem_private_key(
@@ -99,8 +99,8 @@ class Client:
                         default_backend()
                     )
                 )
-        except BaseException as e:
-            raise Exception("Key {} couldn't be loaded".format(e))
+            except BaseException as e:
+                raise Exception("Key {} couldn't be loaded".format(e))
 
         try:
             self._acme = client.Client(
