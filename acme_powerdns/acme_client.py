@@ -33,8 +33,9 @@ class Client:
     def __init__(self, logging, directory_url):
         """Initialize a new ACME client.
 
-        logging: a logging object.
-        directory_url: the ACME directory url (e.g. staging directory).
+        Args:
+            logging: a logging object.
+            directory_url: the ACME directory url (e.g. staging directory).
         """
         self._logging = logging
         self._acme = None
@@ -44,7 +45,8 @@ class Client:
         """Create a new account on the directory server.
         If the account exists, nothing will happen.
 
-        keyfile: file with the private RSA account key.
+        Args:
+            keyfile: file with the private RSA account key.
         """
         # generate_private_key requires cryptography>=0.5
         with open(keyfile, 'rb') as kf:
@@ -85,6 +87,14 @@ class Client:
         return authzr
 
     def filter_challenges(self, authzr) -> messages.ChallengeBody:
+        """Filter a authorization response for a given challenge type.
+
+        Args:
+            authzr: the authorization response.
+            type: the challenge type.
+
+        Return: message of type challenge body.
+        """
         for c in authzr.body.combinations:
             if len(c) == 1 and isinstance(
                     authzr.body.challenges[c[0]].chall,
@@ -93,9 +103,24 @@ class Client:
         return None
 
     def answer_challenge(self, challb, chall_response):
+        """Send a challenge confirmation message.
+
+        Args:
+            challb: a message of type challenge body.
+            chall_response: the challenge response message.
+        """
         self._acme.answer_challenge(challb, chall_response)
 
     def request_cert(self, csr_file, authzrs) -> (list, list):
+        """Request a certificate for a list of authorized domains.
+
+        Args:
+            csr_file: filename of the csr file.
+            authzrs: a list of authorization responses.
+
+        Return: a list of certificates and chains of type
+                acme.jose.util.ComparableX509.
+        """
         with open(csr_file, 'rb') as fp:
             csr = OpenSSL.crypto.load_certificate_request(
                 OpenSSL.crypto.FILETYPE_PEM,
