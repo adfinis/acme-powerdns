@@ -76,7 +76,15 @@ class Client:
         self._logging.debug(self._regr)
         return account_key
 
-    def request_challenges(self, domain) -> messages.AuthorizationResource:
+    def request_domain_challenges(self,
+                                  domain) -> messages.AuthorizationResource:
+        """Request a challenge for a given domain.
+
+        Args:
+            domain: domain name
+
+        Return: an authorization response.
+        """
         authzr = self._acme.request_domain_challenges(
             domain,
             new_authzr_uri = self._regr.new_authzr_uri,
