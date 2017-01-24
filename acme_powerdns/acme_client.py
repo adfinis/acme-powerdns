@@ -63,7 +63,6 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 import OpenSSL
 
-from acme import challenges
 from acme import client
 from acme import messages
 from acme import jose
@@ -135,19 +134,19 @@ class Client:
         authzr, authzr_response = self._acme.poll(authzr)
         return authzr
 
-    def filter_challenges(self, authzr) -> messages.ChallengeBody:
+    def filter_challenges(self, authzr, ctype) -> messages.ChallengeBody:
         """Filter a authorization response for a given challenge type.
 
         Args:
             authzr: the authorization response.
-            type: the challenge type.
+            ctype: the challenge type.
 
         Return: message of type challenge body.
         """
         for c in authzr.body.combinations:
             if len(c) == 1 and isinstance(
                     authzr.body.challenges[c[0]].chall,
-                    challenges.DNS01):
+                    ctype):
                 return authzr.body.challenges[c[0]]
         return None
 
