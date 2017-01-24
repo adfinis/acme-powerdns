@@ -88,10 +88,9 @@ class Client:
         Args:
             keyfile: file with the private RSA account key.
         """
-        # generate_private_key requires cryptography>=0.5
-        with open(keyfile, 'rb') as kf:
-            key_contents = kf.read()
-            try:
+        try:
+            with open(keyfile, 'rb') as kf:
+                key_contents = kf.read()
                 account_key = jose.JWKRSA(
                     key=serialization.load_pem_private_key(
                         key_contents,
@@ -99,21 +98,24 @@ class Client:
                         default_backend()
                     )
                 )
-            except TypeError as e:
-                self._logging.error(e)
+        except BaseException as e:
+            raise Exception("Key {} couldn't be loaded".format(e))
 
-        self._acme = client.Client(
-            self._directory_url,
-            account_key,
-        )
+        try:
+            self._acme = client.Client(
+                self._directory_url,
+                account_key,
+            )
 
-        self._regr = self._acme.register()
-        self._logging.info(
-            'Auto-accepting TOS: %s',
-            self._regr.terms_of_service,
-        )
-        self._acme.agree_to_tos(self._regr)
-        self._logging.debug(self._regr)
+            self._regr = self._acme.register()
+            self._logging.info(
+                'Auto-accepting TOS: %s',
+                self._regr.terms_of_service,
+            )
+            self._acme.agree_to_tos(self._regr)
+            self._logging.debug(self._regr)
+        except BaseException as e:
+            raise SystemError("Account not created: {}".format(e))
         return account_key
 
     def request_domain_challenges(self,
@@ -125,13 +127,16 @@ class Client:
 
         Return: an authorization response.
         """
-        authzr = self._acme.request_domain_challenges(
-            domain,
-            new_authzr_uri=self._regr.new_authzr_uri,
-        )
-        self._logging.debug(authzr)
+        try:
+            authzr = self._acme.request_domain_challenges(
+                domain,
+                new_authzr_uri=self._regr.new_authzr_uri,
+            )
+            self._logging.debug(authzr)
 
-        authzr, authzr_response = self._acme.poll(authzr)
+            authzr, authzr_response = self._acme.poll(authzr)
+        except BaseException as e:
+            raise SystemError("Challenge requesting failed: {}".format(e))
         return authzr
 
     def filter_challenges(self, authzr, ctype) -> messages.ChallengeBody:
@@ -148,7 +153,7 @@ class Client:
                     authzr.body.challenges[c[0]].chall,
                     ctype):
                 return authzr.body.challenges[c[0]]
-        return None
+        raise LookupError('{} not in {}'.format(ctype, authzr))
 
     def answer_challenge(self, challb, chall_response):
         """Send a challenge confirmation message.
@@ -157,7 +162,10 @@ class Client:
             challb: a message of type challenge body.
             chall_response: the challenge response message.
         """
-        self._acme.answer_challenge(challb, chall_response)
+        try:
+            self._acme.answer_challenge(challb, chall_response)
+        except BaseException as e:
+            raise SystemError("Challenge answering failed: {}".format(e))
 
     def request_cert(self, csr_file, authzrs) -> (list, list):
         """Request a certificate for a list of authorized domains.
@@ -170,23 +178,27 @@ class Client:
                 acme.jose.util.ComparableX509.
         """
         with open(csr_file, 'rb') as fp:
-            csr = OpenSSL.crypto.load_certificate_request(
-                OpenSSL.crypto.FILETYPE_PEM,
-                fp.read()
-            )
+            try:
+                csr = OpenSSL.crypto.load_certificate_request(
+                    OpenSSL.crypto.FILETYPE_PEM,
+                    fp.read()
+                )
+            except BaseException as e:
+                raise ValueError("CSR in false format: {}".format(e))
         try:
             crt, updated_authzrs = self._acme.poll_and_request_issuance(
                 jose.util.ComparableX509(csr),
                 authzrs,
             )
-        except messages.Error as error:
-            self._logging.error(
-                "Error from server: {}".format(
-                    error
-                )
+        except BaseException as e:
+            raise SystemError("Getting certificate failed: {}".format(e))
+        try:
+            cert = [crt.body]
+            chain = self._acme.fetch_chain(crt)
+        except BaseException as e:
+            raise ValueError(
+                "Extracting certificate and getting chain failed: {}".format(e)
             )
-        cert = [crt.body]
-        chain = self._acme.fetch_chain(crt)
         return (cert, chain)
 
 
