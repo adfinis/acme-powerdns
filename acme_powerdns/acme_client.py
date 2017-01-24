@@ -40,7 +40,7 @@ class Client:
         self._acme = None
         self._directory_url = directory_url
 
-    def create_account(self, keyfile):
+    def create_account(self, keyfile) -> jose.JWKRSA:
         """Create a new account on the directory server.
         If the account exists, nothing will happen.
 
@@ -74,7 +74,7 @@ class Client:
         self._logging.debug(self._regr)
         return account_key
 
-    def request_challenges(self, domain):
+    def request_challenges(self, domain) -> messages.AuthorizationResource:
         authzr = self._acme.request_domain_challenges(
             domain,
             new_authzr_uri = self._regr.new_authzr_uri,
@@ -84,7 +84,7 @@ class Client:
         authzr, authzr_response = self._acme.poll(authzr)
         return authzr
 
-    def filter_challenges(self, authzr):
+    def filter_challenges(self, authzr) -> messages.ChallengeBody:
         for c in authzr.body.combinations:
             if len(c) == 1 and isinstance(
                     authzr.body.challenges[c[0]].chall,
@@ -95,7 +95,7 @@ class Client:
     def answer_challenge(self, challb, chall_response):
         self._acme.answer_challenge(challb, chall_response)
 
-    def request_cert(self, csr_file, authzrs):
+    def request_cert(self, csr_file, authzrs) -> (list, list):
         with open(csr_file, 'rb') as fp:
             csr = OpenSSL.crypto.load_certificate_request(
                 OpenSSL.crypto.FILETYPE_PEM,
