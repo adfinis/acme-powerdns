@@ -21,6 +21,7 @@
 """
 import logging
 from OpenSSL import crypto
+from acme import challenges
 from acme_powerdns import acme_client
 
 
@@ -40,7 +41,7 @@ for domain in ['www.example.com', 'mail.example.com']:
     authzr = ac.request_domain_challenges(domain)
     authzrs.append(authzr)
 
-    challb = ac.filter_challenges(authzr)
+    challb = ac.filter_challenges(authzr, challenges.DNS01)
     chall_response, chall_validation = challb.response_and_validation(
         account_key
     )
