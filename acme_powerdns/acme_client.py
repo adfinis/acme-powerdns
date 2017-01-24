@@ -1,6 +1,47 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+"""
+import logging
+from OpenSSL import crypto
+from acme_powerdns import acme_client
+
+
+logging.basicConfig(level=logging.INFO)
+
+ac = acme_client.Client(
+    logging,
+    'https://acme-staging.api.letsencrypt.org/directory'
+)
+authzrs = list()
+
+# create an ACME account
+account_key = ac.create_account('account.key')
+
+for domain in ['www.example.com', 'mail.example.com']:
+    # request a challenge
+    authzr = ac.request_domain_challenges(domain)
+    authzrs.append(authzr)
+
+    challb = ac.filter_challenges(authzr)
+    chall_response, chall_validation = challb.response_and_validation(
+        account_key
+    )
+
+    # TODO: save the chall_validation (and validate if it's available)
+
+    # send the challenge answer to the directory
+    ac.answer_challenge(challb, chall_response)
+
+    # TODO: delete the chall_validation
+
+# get the certificate and chain
+(cert, chain) = ac.request_cert(settings.CSR, authzrs)
+with open(settings.CRT, 'wb') as f:
+    for crt in cert:
+        f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+"""
+
 # Copyright (c) 2017, Adfinis SyGroup AG
 # All rights reserved.
 #
