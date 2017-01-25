@@ -207,6 +207,13 @@ class CertRequest:
         self._account_key = account_key
 
     def request_tokens(self, domains):
+        """Request tokens for a list of domains.
+
+        Args:
+            domains: a list of domains (as strings).
+
+        Return: a list of dicts with domain and token.
+        """
         tokens = list()
         for domain in domains:
             # request a challenge
@@ -233,6 +240,13 @@ class CertRequest:
         return tokens
 
     def answer_challenges(self, csr_file, crt_file, chain_file):
+        """Answer all challenges.
+
+        Args:
+            csr_file: the filename of the csr file.
+            crt_file: the filename of the cert file.
+            chain_file: the filename of the chain file.
+        """
         authzrs = list()
         for authzr in self._challenges:
             self._client.answer_challenge(authzr['challb'], authzr['response'])
