@@ -121,7 +121,7 @@ class Client:
             self._logging.debug(self._regr)
         except BaseException as e:
             raise SystemError("Account not created: {}".format(e))
-        return (self._regr, account_key)
+        return (self._regr, self._acme, account_key)
 
     def request_domain_challenges(self,
                                   domain,
@@ -202,12 +202,14 @@ class Client:
 
 class CertRequest:
 
-    def __init__(self, client, account_key):
+    def __init__(self, client, acme, regr, account_key):
         self._client = client
+        self._acme = acme
+        self._regr = regr
         self._challenges = list()
         self._account_key = account_key
 
-    def request_tokens(self, domains) -> list:
+    def request_tokens(self, domains, ctype) -> list:
         """Request tokens for a list of domains.
 
         Args:
@@ -216,12 +218,34 @@ class CertRequest:
         Return: a list of dicts with domain and token.
         """
         tokens = list()
+        try:
+            challenge_class = {
+                'dns01': challenges.DNS01,
+                'http01': challenges.HTTP01,
+                'tlssni01': challenges.TLSSNI01,
+            }[ctype]
+        except KeyError:
+            raise ValueError('Type {} is not defined'.format(ctype))
         for domain in domains:
             # request a challenge
-            authzr, challb = self._client.request_domain_challenges(
-                domain,
-                challenges.DNS01,
-            )
+            try:
+                authzr = self._acme.request_domain_challenges(
+                    domain,
+                    new_authzr_uri=self._regr.new_authzr_uri,
+                )
+
+                authzr, authzr_response = self._acme.poll(authzr)
+            except BaseException as e:
+                raise SystemError("Challenge requesting failed: {}".format(e))
+
+            challb = None
+            for c in authzr.body.combinations:
+                if len(c) == 1 and isinstance(
+                        authzr.body.challenges[c[0]].chall,
+                        challenge_class):
+                    challb = authzr.body.challenges[c[0]]
+            if challb is None:
+                raise LookupError('{} not in {}'.format(ctype, authzr))
 
             response, validation = challb.response_and_validation(
                 self._account_key

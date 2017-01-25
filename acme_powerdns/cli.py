@@ -40,17 +40,20 @@ def main():
     )
 
     # create an ACME account
-    regr, account_key = ac.create_account(
+    regr, acme, account_key = ac.create_account(
         settings.ACCOUNT_KEY,
     )
 
     # create certificate request
     cr = acme_client.CertRequest(
         ac,
+        acme,
+        regr,
         account_key,
     )
     tokens = cr.request_tokens(
         settings.FQDN,
+        'dns01',
     )
 
     for token in tokens:
