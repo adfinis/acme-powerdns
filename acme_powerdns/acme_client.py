@@ -85,7 +85,8 @@ class Client:
         self._acme = None
         self._directory_url = directory_url
 
-    def create_account(self, keyfile) -> jose.JWKRSA:
+    def create_account(self, keyfile) -> (
+            messages.RegistrationResource, jose.JWKRSA):
         """Create a new account on the directory server.
         If the account exists, nothing will happen.
 
@@ -120,7 +121,7 @@ class Client:
             self._logging.debug(self._regr)
         except BaseException as e:
             raise SystemError("Account not created: {}".format(e))
-        return account_key
+        return (self._regr, account_key)
 
     def request_domain_challenges(self,
                                   domain,

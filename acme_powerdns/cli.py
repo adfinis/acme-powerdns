@@ -40,7 +40,7 @@ def main():
     )
 
     # create an ACME account
-    account_key = ac.create_account(
+    regr, account_key = ac.create_account(
         settings.ACCOUNT_KEY,
     )
 
