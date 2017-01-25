@@ -21,45 +21,58 @@
 """
 import logging
 from OpenSSL import crypto
-from acme import challenges
 from acme_powerdns import acme_client
 
 
 logging.basicConfig(level=logging.INFO)
 
-ac = acme_client.Client(
+ac = acme_client.Account(
     logging,
     'https://acme-staging.api.letsencrypt.org/directory'
 )
-authzrs = list()
 
 # create an ACME account
-account_key = ac.create_account('account.key')
+regr, acme, account_key = ac.create_account(
+    'account.key',
+)
 
-for domain in ['www.example.com', 'mail.example.com']:
-    # request a challenge
-    authzr, challb = ac.request_domain_challenges(
-        domain,
-        challenges.DNS01,
+# create certificate request
+cr = acme_client.CertRequest(
+    ac,
+    acme,
+    regr,
+    account_key,
+)
+tokens = cr.request_tokens(
+    [
+        'www.example.com',
+        'mail.example.com',
+    ],
+    'dns01',
+)
+
+for token in tokens:
+    # TODO: create all tokens
+    # save the token['validation'] for each token['domain']
+
+with open(settings.CSR, 'rb') as fp:
+    csr = crypto.load_certificate_request(
+        crypto.FILETYPE_PEM,
+        fp.read()
     )
-    authzrs.append(authzr)
-
-    chall_response, chall_validation = challb.response_and_validation(
-        account_key
-    )
-
-    # TODO: save the chall_validation (and validate if it's available)
-
-    # send the challenge answer to the directory
-    ac.answer_challenge(challb, chall_response)
-
-    # TODO: delete the chall_validation
-
-# get the certificate and chain
-(cert, chain) = ac.request_cert(settings.CSR, authzrs)
+cert, chain = cr.answer_challenges(
+    csr,
+)
 with open(settings.CRT, 'wb') as f:
     for crt in cert:
         f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+with open(settings.CHAIN, 'wb') as f:
+    for crt in chain:
+        f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+
+for token in tokens:
+    # TODO: create all tokens
+    # delete the token['validation'] for each token['domain']
 """
 
 from cryptography.hazmat.backends import default_backend
