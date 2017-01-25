@@ -206,7 +206,7 @@ class CertRequest:
         self._challenges = list()
         self._account_key = account_key
 
-    def request_tokens(self, domains):
+    def request_tokens(self, domains) -> list:
         """Request tokens for a list of domains.
 
         Args:
