@@ -29,7 +29,7 @@ from acme_powerdns import settings
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    ac = acme_client.Client(
+    ac = acme_client.Account(
         logging,
         settings.DIRECTORY_URL,
     )

@@ -64,7 +64,6 @@ with open(settings.CRT, 'wb') as f:
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from OpenSSL import crypto
 
 from acme import client
 from acme import challenges
@@ -72,7 +71,7 @@ from acme import messages
 from acme import jose
 
 
-class Client:
+class Account:
 
     def __init__(self, logging, directory_url):
         """Initialize a new ACME client.
