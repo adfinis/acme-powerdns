@@ -38,10 +38,12 @@ account_key = ac.create_account('account.key')
 
 for domain in ['www.example.com', 'mail.example.com']:
     # request a challenge
-    authzr = ac.request_domain_challenges(domain)
+    authzr, challb = ac.request_domain_challenges(
+        domain,
+        challenges.DNS01,
+    )
     authzrs.append(authzr)
 
-    challb = ac.filter_challenges(authzr, challenges.DNS01)
     chall_response, chall_validation = challb.response_and_validation(
         account_key
     )
@@ -120,13 +122,16 @@ class Client:
         return account_key
 
     def request_domain_challenges(self,
-                                  domain) -> messages.AuthorizationResource:
+                                  domain,
+                                  ctype) -> (messages.AuthorizationResource,
+                                             messages.ChallengeBody):
         """Request a challenge for a given domain.
 
         Args:
-            domain: domain name
+            domain: domain name.
+            ctype: the challenge type (a acme.challenges.* object).
 
-        Return: an authorization response.
+        Return: an authorization response and a challenge object.
         """
         try:
             authzr = self._acme.request_domain_challenges(
@@ -138,22 +143,12 @@ class Client:
             authzr, authzr_response = self._acme.poll(authzr)
         except BaseException as e:
             raise SystemError("Challenge requesting failed: {}".format(e))
-        return authzr
 
-    def filter_challenges(self, authzr, ctype) -> messages.ChallengeBody:
-        """Filter a authorization response for a given challenge type.
-
-        Args:
-            authzr: the authorization response.
-            ctype: the challenge type.
-
-        Return: message of type challenge body.
-        """
         for c in authzr.body.combinations:
             if len(c) == 1 and isinstance(
                     authzr.body.challenges[c[0]].chall,
                     ctype):
-                return authzr.body.challenges[c[0]]
+                return (authzr, authzr.body.challenges[c[0]])
         raise LookupError('{} not in {}'.format(ctype, authzr))
 
     def answer_challenge(self, challb, chall_response):
