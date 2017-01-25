@@ -27,11 +27,9 @@ from acme_powerdns import dns
 from acme_powerdns import settings
 
 
-logging.basicConfig(level=logging.INFO)
-
-
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
+
     ac = acme_client.Client(
         logging,
         settings.DIRECTORY_URL,
