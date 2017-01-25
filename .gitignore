@@ -1,5 +1,6 @@
 # .gitignore
 
+# some basic and python stuff
 *.swp
 *.pyc
 *.egg-info/
@@ -7,10 +8,20 @@ __pycache__/
 /.cache
 /.coverage
 /.deps
-/.vagrant
-/build
-/doc/_build
 /.python-version
 /.venv
 
+# some build environment stuff
+/.vagrant
+/build
+/doc/_build
+
+# project stuff
 /acme_powerdns/settings.py
+
+# keys, signing requests and certificates
+*.key
+*.csr
+*.crt
+*.pem
+*.ext
