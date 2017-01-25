@@ -67,6 +67,7 @@ from cryptography.hazmat.primitives import serialization
 from OpenSSL import crypto
 
 from acme import client
+from acme import challenges
 from acme import messages
 from acme import jose
 
@@ -196,6 +197,51 @@ class Client:
                 "Extracting certificate and getting chain failed: {}".format(e)
             )
         return (cert, chain)
+
+
+class CertRequest:
+
+    def __init__(self, client, account_key):
+        self._client = client
+        self._challenges = list()
+        self._account_key = account_key
+
+    def request_tokens(self, domains):
+        tokens = list()
+        for domain in domains:
+            # request a challenge
+            authzr, challb = self._client.request_domain_challenges(
+                domain,
+                challenges.DNS01,
+            )
+
+            response, validation = challb.response_and_validation(
+                self._account_key
+            )
+
+            self._challenges.append({
+                'authzr': authzr,
+                'challb': challb,
+                'response': response,
+                'validation': validation,
+            })
+            tokens.append({
+                'domain': domain,
+                'validation': validation,
+            })
+
+        return tokens
+
+    def answer_challenges(self, csr_file, crt_file, chain_file):
+        authzrs = list()
+        for authzr in self._challenges:
+            self._client.answer_challenge(authzr['challb'], authzr['response'])
+            authzrs.append(authzr['authzr'])
+
+        (cert, chain) = self._client.request_cert(csr_file, authzrs)
+        with open(crt_file, 'wb') as f:
+            for crt in cert:
+                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
 
 
 def _monkeypatch_post(self, url, obj,
