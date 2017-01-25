@@ -20,8 +20,6 @@
 
 import logging
 import sys
-from OpenSSL import crypto
-from acme import challenges
 from acme_powerdns import acme_client
 from acme_powerdns import dns
 from acme_powerdns import settings
@@ -46,44 +44,38 @@ def main():
         settings.ACCOUNT_KEY,
     )
 
-    authzrs = list()
-    for domain in settings.FQDN:
-        # request a challenge
-        authzr, challb = ac.request_domain_challenges(
-            domain,
-            challenges.DNS01,
-        )
-        authzrs.append(authzr)
+    # create certificate request
+    cr = acme_client.CertRequest(
+        ac,
+        account_key,
+    )
+    tokens = cr.request_tokens(
+        settings.FQDN,
+    )
 
-        chall_response, chall_validation = challb.response_and_validation(
-            account_key
-        )
-
+    for token in tokens:
         # create dns record
         nsupdate.create(
             settings.SERVER,
             settings.ZONE,
-            '_acme-challenge.{}'.format(domain),
-            chall_validation,
+            '_acme-challenge.{}'.format(token['domain']),
+            token['validation'],
         )
 
-        try:
-            ac.answer_challenge(challb, chall_response)
-        except BaseException as e:
-            logging.error(e)
+    cr.answer_challenges(
+        settings.CSR,
+        settings.CRT,
+        settings.CHAIN,
+    )
 
+    for token in tokens:
         # delete dns record
         nsupdate.delete(
             settings.SERVER,
             settings.ZONE,
-            '_acme-challenge.{}'.format(domain),
-            chall_validation,
+            '_acme-challenge.{}'.format(token['domain']),
+            token['validation'],
         )
-
-    (cert, chain) = ac.request_cert(settings.CSR, authzrs)
-    with open(settings.CRT, 'wb') as f:
-        for crt in cert:
-            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
 
     sys.exit(0)
 
