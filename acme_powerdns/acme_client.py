@@ -64,7 +64,7 @@ with open(settings.CRT, 'wb') as f:
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-import OpenSSL
+from OpenSSL import crypto
 
 from acme import client
 from acme import messages
@@ -175,8 +175,8 @@ class Client:
         """
         with open(csr_file, 'rb') as fp:
             try:
-                csr = OpenSSL.crypto.load_certificate_request(
-                    OpenSSL.crypto.FILETYPE_PEM,
+                csr = crypto.load_certificate_request(
+                    crypto.FILETYPE_PEM,
                     fp.read()
                 )
             except BaseException as e:
