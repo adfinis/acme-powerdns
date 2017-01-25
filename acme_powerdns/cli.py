@@ -20,6 +20,7 @@
 
 import logging
 import sys
+from OpenSSL import crypto
 from acme_powerdns import acme_client
 from acme_powerdns import dns
 from acme_powerdns import settings
@@ -65,11 +66,20 @@ def main():
             token['validation'],
         )
 
-    cr.answer_challenges(
-        settings.CSR,
-        settings.CRT,
-        settings.CHAIN,
+    with open(settings.CSR, 'rb') as fp:
+        csr = crypto.load_certificate_request(
+            crypto.FILETYPE_PEM,
+            fp.read()
+        )
+    cert, chain = cr.answer_challenges(
+        csr,
     )
+    with open(settings.CRT, 'wb') as f:
+        for crt in cert:
+            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+    with open(settings.CHAIN, 'wb') as f:
+        for crt in chain:
+            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
 
     for token in tokens:
         # delete dns record

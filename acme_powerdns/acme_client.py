@@ -264,7 +264,7 @@ class CertRequest:
 
         return tokens
 
-    def answer_challenges(self, csr_file, crt_file, chain_file):
+    def answer_challenges(self, csr):
         """Answer all challenges.
 
         Args:
@@ -274,13 +274,31 @@ class CertRequest:
         """
         authzrs = list()
         for authzr in self._challenges:
-            self._client.answer_challenge(authzr['challb'], authzr['response'])
+            try:
+                self._acme.answer_challenge(
+                    authzr['challb'],
+                    authzr['response'],
+                )
+            except BaseException as e:
+                raise SystemError("Challenge answering failed: {}".format(e))
             authzrs.append(authzr['authzr'])
 
-        (cert, chain) = self._client.request_cert(csr_file, authzrs)
-        with open(crt_file, 'wb') as f:
-            for crt in cert:
-                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+        try:
+            crt, updated_authzrs = self._acme.poll_and_request_issuance(
+                jose.util.ComparableX509(csr),
+                authzrs,
+            )
+        except BaseException as e:
+            raise SystemError("Requesting certificate failed: {}".format(e))
+
+        try:
+            cert = [crt.body]
+            chain = self._acme.fetch_chain(crt)
+        except BaseException as e:
+            raise ValueError(
+                "Extracting certificate and getting chain failed: {}".format(e)
+            )
+        return (cert, chain)
 
 
 def _monkeypatch_post(self, url, obj,
