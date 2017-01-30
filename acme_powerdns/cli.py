@@ -52,6 +52,8 @@ def main():
         settings.CRT,
     )
 
+    fqdn = csr.get_alternative_names()
+
     # create certificate request
     cr = acme_client.CertRequest(
         ac,
@@ -60,7 +62,7 @@ def main():
         account_key,
     )
     tokens = cr.request_tokens(
-        settings.FQDN,
+        fqdn,
         'dns01',
     )
 

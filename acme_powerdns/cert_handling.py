@@ -21,6 +21,7 @@
 import os
 from datetime import datetime
 from OpenSSL import crypto
+from acme import crypto_util
 
 
 class CertHandling:
@@ -90,3 +91,12 @@ class CertHandling:
             return expire_in.days
         else:
             return 0
+
+    def get_alternative_names(self) -> list:
+        """Get Subject Alternative Names from certificate.
+
+        :returns: A list of Subject Alternative Names.
+        :rtype: `list` of `unicode`.
+        """
+
+        return crypto_util._pyopenssl_cert_or_req_san(self._csr)
