@@ -21,6 +21,7 @@
 import logging
 import sys
 from OpenSSL import crypto
+from acme_powerdns import cert_handling
 from acme_powerdns import acme_client
 from acme_powerdns import dns
 from acme_powerdns import settings
@@ -45,6 +46,12 @@ def main():
         settings.ACCOUNT_KEY,
     )
 
+    # load CSRs
+    csr = cert_handling.CertHandling(
+        settings.CSR,
+        settings.CRT,
+    )
+
     # create certificate request
     cr = acme_client.CertRequest(
         ac,
@@ -65,14 +72,8 @@ def main():
             '_acme-challenge.{}'.format(token['domain']),
             token['validation'],
         )
-
-    with open(settings.CSR, 'rb') as fp:
-        csr = crypto.load_certificate_request(
-            crypto.FILETYPE_PEM,
-            fp.read()
-        )
     cert, chain = cr.answer_challenges(
-        csr,
+        csr._csr,
     )
     with open(settings.CRT, 'wb') as f:
         for crt in cert:
