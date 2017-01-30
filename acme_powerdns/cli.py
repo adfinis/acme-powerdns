@@ -54,44 +54,49 @@ def main():
 
     fqdn = csr.get_alternative_names()
 
-    # create certificate request
-    cr = acme_client.CertRequest(
-        ac,
-        acme,
-        regr,
-        account_key,
-    )
-    tokens = cr.request_tokens(
-        fqdn,
-        'dns01',
-    )
-
-    for token in tokens:
-        # create dns record
-        nsupdate.create(
-            settings.SERVER,
-            settings.ZONE,
-            '_acme-challenge.{}'.format(token['domain']),
-            token['validation'],
+    logging.info('Certificate {} expires in {} days'.format(
+        settings.CRT,
+        csr.enddate(),
+    ))
+    if csr.enddate() < settings.DAYS:
+        # create certificate request
+        cr = acme_client.CertRequest(
+            ac,
+            acme,
+            regr,
+            account_key,
         )
-    cert, chain = cr.answer_challenges(
-        csr._csr,
-    )
-    with open(settings.CRT, 'wb') as f:
-        for crt in cert:
-            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
-    with open(settings.CHAIN, 'wb') as f:
-        for crt in chain:
-            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
-
-    for token in tokens:
-        # delete dns record
-        nsupdate.delete(
-            settings.SERVER,
-            settings.ZONE,
-            '_acme-challenge.{}'.format(token['domain']),
-            token['validation'],
+        tokens = cr.request_tokens(
+            fqdn,
+            'dns01',
         )
+
+        for token in tokens:
+            # create dns record
+            nsupdate.create(
+                settings.SERVER,
+                settings.ZONE,
+                '_acme-challenge.{}'.format(token['domain']),
+                token['validation'],
+            )
+        cert, chain = cr.answer_challenges(
+            csr._csr,
+        )
+        with open(settings.CRT, 'wb') as f:
+            for crt in cert:
+                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+        with open(settings.CHAIN, 'wb') as f:
+            for crt in chain:
+                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+
+        for token in tokens:
+            # delete dns record
+            nsupdate.delete(
+                settings.SERVER,
+                settings.ZONE,
+                '_acme-challenge.{}'.format(token['domain']),
+                token['validation'],
+            )
 
     sys.exit(0)
 
