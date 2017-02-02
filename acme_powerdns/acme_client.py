@@ -96,10 +96,6 @@ class Account:
         If the account exists, nothing will happen.
 
         :param string keyfile: file with the private RSA account key.
-
-        :returns: a tuple
-        :rtype: (acme.messages.RegistrationResource, acme.client.Client,
-                acme.jose.JWKRSA)
         """
         with open(keyfile, 'rb') as kf:
             try:
