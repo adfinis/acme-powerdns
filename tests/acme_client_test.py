@@ -51,3 +51,5 @@ def test_cert_request_request_tokens():
         ['www.example.com', 'mail.example.com'],
         'dns01',
     )
+    with pytest.raises(ValueError):
+        assert cert_request().request_tokens(['www.example.com'], 'dns00')
