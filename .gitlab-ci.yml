@@ -1,0 +1,14 @@
+---
+# -*- coding: utf-8 -*-
+
+before_script: []
+
+stages:
+  - test
+
+run-test:
+  stage: test
+  script:
+    - make test
+
+# vim: set ts=2 sw=2 tw=2 :
