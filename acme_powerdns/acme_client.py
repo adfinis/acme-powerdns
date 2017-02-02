@@ -186,6 +186,8 @@ class CertRequest:
             }[ctype]
         except KeyError:
             raise ValueError('Type {0} is not defined'.format(ctype))
+        if domains == []:
+            raise ValueError('Empty domain list')
         for domain in domains:
             # request a challenge
             try:
