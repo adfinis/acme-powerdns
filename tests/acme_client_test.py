@@ -38,5 +38,6 @@ def test_account_account_key():
     assert type(account().get_account_key()) == acme.jose.jwk.JWKRSA
 
 
-def test_cert_request_request_token():
-    assert type(account().get_account_key()) == acme.jose.jwk.JWKRSA
+@pytest.fixture(scope='session')
+def cert_request():
+    return acme_client.CertRequest(account())
