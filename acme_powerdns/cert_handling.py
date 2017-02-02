@@ -25,6 +25,12 @@ from acme import crypto_util
 
 
 class CertHandling:
+    """Handle one certificate.
+    Load and handle certificate and signing request.
+
+    :ivar string csr: certificate signing request filename.
+    :ivar string crt: certificate filename.
+    """
 
     def __init__(self, csr, crt):
         self._csr_file = csr
@@ -36,7 +42,7 @@ class CertHandling:
         """Load the certificate request of this object.
 
         :returns: Certificate request.
-        :rtype: `OpenSSL.crypto.X509Req`
+        :rtype: :class:`OpenSSL.crypto.X509Req`
         """
 
         if os.path.isfile(self._csr_file):
@@ -55,7 +61,7 @@ class CertHandling:
         """Load the certificate of this object.
 
         :returns: Certificate.
-        :rtype: `OpenSSL.crypto.X509`
+        :rtype: :class:`OpenSSL.crypto.X509`
         """
 
         if os.path.isfile(self._crt_file):
