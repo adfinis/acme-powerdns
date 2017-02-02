@@ -37,7 +37,7 @@ class NSUpdate:
 
     def create(self, server, zone, record, rdata):
         self._logging.info(
-            'add record [{}] in zone [{}] on [{}] with rdata [{}]'.format(
+            'add record [{0}] in zone [{1}] on [{2}] with rdata [{3}]'.format(
                 record,
                 zone,
                 server,
@@ -46,12 +46,12 @@ class NSUpdate:
         )
         data = update.Update(
             zone,
-            keyname = self._keyid,
-            keyring = self._keyring,
-            keyalgorithm = getattr(tsig, self._algo),
+            keyname=self._keyid,
+            keyring=self._keyring,
+            keyalgorithm=getattr(tsig, self._algo),
         )
         data.add(
-            '{}.'.format(record),
+            '{0}.'.format(record),
             60,
             'TXT',
             rdata,
@@ -64,7 +64,7 @@ class NSUpdate:
 
     def delete(self, server, zone, record, rdata):
         self._logging.info(
-            'delete record [{}] in zone [{}] on [{}]'.format(
+            'delete record [{0}] in zone [{1}] on [{2}]'.format(
                 record,
                 zone,
                 server,
@@ -72,12 +72,12 @@ class NSUpdate:
         )
         data = update.Update(
             zone,
-            keyname = self._keyid,
-            keyring = self._keyring,
-            keyalgorithm = getattr(tsig, self._algo),
+            keyname=self._keyid,
+            keyring=self._keyring,
+            keyalgorithm=getattr(tsig, self._algo),
         )
         data.delete(
-            '{}.'.format(record),
+            '{0}.'.format(record),
             'TXT',
             rdata,
         )

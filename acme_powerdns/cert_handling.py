@@ -52,7 +52,7 @@ class CertHandling:
                     fp.read()
                 )
         else:
-            raise ValueError('certificate request {} does not exists'.format(
+            raise ValueError('certificate request {0} does not exists'.format(
                 self._csr_file,
             ))
         return csr

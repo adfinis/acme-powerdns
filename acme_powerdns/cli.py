@@ -54,7 +54,7 @@ def main():
 
     fqdn = csr.get_alternative_names()
 
-    logging.info('Certificate {} expires in {} days'.format(
+    logging.info('Certificate {0} expires in {1} days'.format(
         settings.CRT,
         csr.enddate(),
     ))
@@ -71,7 +71,7 @@ def main():
             nsupdate.create(
                 settings.SERVER,
                 settings.ZONE,
-                '_acme-challenge.{}'.format(token['domain']),
+                '_acme-challenge.{0}'.format(token['domain']),
                 token['validation'],
             )
         cert, chain = cr.answer_challenges(
@@ -89,7 +89,7 @@ def main():
             nsupdate.delete(
                 settings.SERVER,
                 settings.ZONE,
-                '_acme-challenge.{}'.format(token['domain']),
+                '_acme-challenge.{0}'.format(token['domain']),
                 token['validation'],
             )
 

@@ -108,7 +108,7 @@ class Account:
                     )
                 )
             except BaseException as e:
-                raise Exception("Key {} couldn't be loaded".format(e))
+                raise Exception("Key {0} couldn't be loaded".format(e))
 
         try:
             self._acme = client.Client(
@@ -124,7 +124,7 @@ class Account:
             self._acme.agree_to_tos(self._regr)
             self._logging.debug(self._regr)
         except BaseException as e:
-            raise SystemError("Account not created: {}".format(e))
+            raise SystemError("Account not created: {0}".format(e))
 
     def get_regr(self):
         """Get account registration resource.
@@ -185,7 +185,7 @@ class CertRequest:
                 'tlssni01': challenges.TLSSNI01,
             }[ctype]
         except KeyError:
-            raise ValueError('Type {} is not defined'.format(ctype))
+            raise ValueError('Type {0} is not defined'.format(ctype))
         for domain in domains:
             # request a challenge
             try:
@@ -196,7 +196,7 @@ class CertRequest:
 
                 authzr, authzr_response = self._acme.poll(authzr)
             except BaseException as e:
-                raise SystemError("Challenge requesting failed: {}".format(e))
+                raise SystemError("Challenge requesting failed: {0}".format(e))
 
             challb = None
             for c in authzr.body.combinations:
@@ -205,7 +205,7 @@ class CertRequest:
                         challenge_class):
                     challb = authzr.body.challenges[c[0]]
             if challb is None:
-                raise LookupError('{} not in {}'.format(ctype, authzr))
+                raise LookupError('{0} not in {1}'.format(ctype, authzr))
 
             response, validation = challb.response_and_validation(
                 self._account_key
@@ -241,7 +241,7 @@ class CertRequest:
                     authzr['response'],
                 )
             except BaseException as e:
-                raise SystemError("Challenge answering failed: {}".format(e))
+                raise SystemError("Challenge answering failed: {0}".format(e))
             authzrs.append(authzr['authzr'])
 
         try:
@@ -250,14 +250,15 @@ class CertRequest:
                 authzrs,
             )
         except BaseException as e:
-            raise SystemError("Requesting certificate failed: {}".format(e))
+            raise SystemError("Requesting certificate failed: {0}".format(e))
 
         try:
             cert = [crt.body]
             chain = self._acme.fetch_chain(crt)
         except BaseException as e:
             raise ValueError(
-                "Extracting certificate and getting chain failed: {}".format(e)
+                "Extracting certificate and getting chain failed: "
+                "{0}".format(e)
             )
         return (cert, chain)
 
