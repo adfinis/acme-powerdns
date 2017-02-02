@@ -85,30 +85,31 @@ from acme import jose
 
 
 class Account:
+    """Create account at the directory.
+
+    :ivar logging logging: a logging object.
+    :ivar string directory_url: acme directory url.
+    """
 
     def __init__(self, logging, directory_url):
-        """Initialize a new ACME client.
-
-        Args:
-            logging: a logging object.
-            directory_url: the ACME directory url (e.g. staging directory).
-        """
         self._logging = logging
         self._acme = None
         self._directory_url = directory_url
 
-    def create_account(self, keyfile) -> (
-            messages.RegistrationResource, jose.JWKRSA):
+    def create_account(self, keyfile):
         """Create a new account on the directory server.
         If the account exists, nothing will happen.
 
-        Args:
-            keyfile: file with the private RSA account key.
+        :param string keyfile: file with the private RSA account key.
+
+        :returns: a tuple
+        :rtype: (acme.messages.RegistrationResource, acme.client.Client,
+                acme.jose.JWKRSA)
         """
         with open(keyfile, 'rb') as kf:
             try:
                 key_contents = kf.read()
-                account_key = jose.JWKRSA(
+                self._account_key = jose.JWKRSA(
                     key=serialization.load_pem_private_key(
                         key_contents,
                         None,
@@ -121,7 +122,7 @@ class Account:
         try:
             self._acme = client.Client(
                 self._directory_url,
-                account_key,
+                self._account_key,
             )
 
             self._regr = self._acme.register()
@@ -133,7 +134,33 @@ class Account:
             self._logging.debug(self._regr)
         except BaseException as e:
             raise SystemError("Account not created: {}".format(e))
-        return (self._regr, self._acme, account_key)
+
+    def get_regr(self):
+        """Get account registration resource.
+
+        :returns: account registration resource.
+        :rtype: acme.messages.RegistrationResource
+        """
+
+        return self._regr
+
+    def get_client(self):
+        """Get acme client object.
+
+        :returns: account client object.
+        :rtype: acme.client.Client
+        """
+
+        return self._acme
+
+    def get_account_key(self):
+        """Get loaded account key.
+
+        :returns: account key.
+        :rtype: acme.jose.JWKRSA
+        """
+
+        return self._account_key
 
 
 class CertRequest:
