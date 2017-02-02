@@ -41,3 +41,13 @@ def test_account_account_key():
 @pytest.fixture(scope='session')
 def cert_request():
     return acme_client.CertRequest(account())
+
+
+def test_cert_request_request_tokens():
+    with pytest.raises(ValueError):
+        assert cert_request().request_tokens([], 'dns01')
+    assert cert_request().request_tokens(['www.example.com'], 'dns01')
+    assert cert_request().request_tokens(
+        ['www.example.com', 'mail.example.com'],
+        'dns01',
+    )
