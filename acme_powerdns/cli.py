@@ -25,7 +25,7 @@ from OpenSSL import crypto
 from acme_powerdns import acme_client, cert_handling, dns, settings
 
 
-def main():
+def renew_certificates():
     logging.basicConfig(level=logging.INFO)
 
     ac = acme_client.Account(
@@ -91,6 +91,9 @@ def main():
                 token['validation'],
             )
 
+
+def main():
+    renew_certificates()
     sys.exit(0)
 
 
