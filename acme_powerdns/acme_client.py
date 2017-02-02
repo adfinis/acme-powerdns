@@ -126,7 +126,7 @@ class Account:
         except BaseException as e:
             raise SystemError("Account not created: {0}".format(e))
 
-    def get_regr(self):
+    def get_regr(self) -> messages.RegistrationResource:
         """Get account registration resource.
 
         :returns: account registration resource.
@@ -135,7 +135,7 @@ class Account:
 
         return self._regr
 
-    def get_client(self):
+    def get_client(self) -> client.Client:
         """Get acme client object.
 
         :returns: account client object.
@@ -144,11 +144,11 @@ class Account:
 
         return self._acme
 
-    def get_account_key(self):
+    def get_account_key(self) -> jose.jwk.JWKRSA:
         """Get loaded account key.
 
         :returns: account key.
-        :rtype: acme.jose.JWKRSA
+        :rtype: acme.jose.jwk.JWKRSA
         """
 
         return self._account_key
