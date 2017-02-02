@@ -32,17 +32,12 @@ ac = acme_client.Account(
 )
 
 # create an ACME account
-regr, acme, account_key = ac.create_account(
+ac.create_account(
     'account.key',
 )
 
 # create certificate request
-cr = acme_client.CertRequest(
-    ac,
-    acme,
-    regr,
-    account_key,
-)
+cr = acme_client.CertRequest(ac)
 tokens = cr.request_tokens(
     [
         'www.example.com',
@@ -164,21 +159,27 @@ class Account:
 
 
 class CertRequest:
+    """Handle a certificate with the acme directory api.
 
-    def __init__(self, client, acme, regr, account_key):
+    :ivar acme.client.Client client: a account client object.
+    """
+
+    def __init__(self, client):
         self._client = client
-        self._acme = acme
-        self._regr = regr
+        self._acme = client.get_client()
+        self._regr = client.get_regr()
+        self._account_key = client.get_account_key()
         self._challenges = list()
-        self._account_key = account_key
 
     def request_tokens(self, domains, ctype) -> list:
         """Request tokens for a list of domains.
 
-        Args:
-            domains: a list of domains (as strings).
+        :param list domains: a list of domains (as string).
+        :param string ctype: challenge type (one of "dns01", "http01",
+                             "tlssni01").
 
-        Return: a list of dicts with domain and token.
+        :returns: a list of dicts with domain and token.
+        :rtype: list
         """
         tokens = list()
         try:
@@ -230,10 +231,11 @@ class CertRequest:
     def answer_challenges(self, csr):
         """Answer all challenges.
 
-        Args:
-            csr_file: the filename of the csr file.
-            crt_file: the filename of the cert file.
-            chain_file: the filename of the chain file.
+        :param csr: certificate signing request.
+        :type csr: :class:`OpenSSL.crypto.X509Req`
+
+        :returns: certificate and certificate chain.
+        :rtype: tuple
         """
         authzrs = list()
         for authzr in self._challenges:

@@ -42,7 +42,7 @@ def main():
     )
 
     # create an ACME account
-    regr, acme, account_key = ac.create_account(
+    ac.create_account(
         settings.ACCOUNT_KEY,
     )
 
@@ -60,12 +60,7 @@ def main():
     ))
     if csr.enddate() < settings.DAYS:
         # create certificate request
-        cr = acme_client.CertRequest(
-            ac,
-            acme,
-            regr,
-            account_key,
-        )
+        cr = acme_client.CertRequest(ac)
         tokens = cr.request_tokens(
             fqdn,
             'dns01',
