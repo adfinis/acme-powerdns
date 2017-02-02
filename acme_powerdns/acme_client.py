@@ -70,13 +70,9 @@ for token in tokens:
     # delete the token['validation'] for each token['domain']
 """
 
+from acme import challenges, client, jose, messages
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-
-from acme import client
-from acme import challenges
-from acme import messages
-from acme import jose
 
 
 class Account:

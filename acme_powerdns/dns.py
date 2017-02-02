@@ -18,10 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from dns import query
-from dns import tsigkeyring
-from dns import update
-from dns import tsig
+from dns import query, tsig, tsigkeyring, update
 
 
 class NSUpdate:

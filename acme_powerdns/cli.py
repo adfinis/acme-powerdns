@@ -20,11 +20,9 @@
 
 import logging
 import sys
+
 from OpenSSL import crypto
-from acme_powerdns import cert_handling
-from acme_powerdns import acme_client
-from acme_powerdns import dns
-from acme_powerdns import settings
+from acme_powerdns import acme_client, cert_handling, dns, settings
 
 
 def main():

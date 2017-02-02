@@ -20,8 +20,9 @@
 
 import os
 from datetime import datetime
-from OpenSSL import crypto
+
 from acme import crypto_util
+from OpenSSL import crypto
 
 
 class CertHandling:
