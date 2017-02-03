@@ -1,7 +1,9 @@
 ---
 # -*- coding: utf-8 -*-
 
-before_script: []
+before_script:
+  - git submodule update --init
+  - pyenv local 3.5.2
 
 stages:
   - test
