@@ -18,7 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import sys
+import argparse
 import logging
+import yaml
 
 
 class Config:
@@ -27,7 +30,53 @@ class Config:
 
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
-        self._logging = logging
+        self._logging = logging.getLogger(__name__)
+
+    def argparse(self):
+        """Parse arguments from cli.
+
+        :param list args: argument list from program call.
+        """
+
+        parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            description="",
+        )
+        parser.add_argument(
+            "-c", "--config",
+            required=False,
+            metavar="FILE",
+            default="/etc/acme_powerdns/config.yml",
+            help="Configuration file",
+        )
+        parser.add_argument(
+            "-l", "--loglevel",
+            required=False,
+            default='INFO',
+            help="""Set the loglevel.
+            Possible values are:
+            DEBUG, INFO, WARN, ERROR, CRITICAL
+            """
+        )
+        argp = parser.parse_args()
+
+        # set log level
+        self._logging.setLevel(argp.loglevel)
+
+        # load configuration
+        try:
+            self._logging.debug("Load configuration file {0}".format(
+                argp.config,
+            ))
+            with open(argp.config, 'r') as f:
+                self._conf = yaml.safe_load(f)
+        except BaseException as e:
+            self._logging.critical(
+                "Error while loading and parsing config {0}".format(
+                    argp.config,
+                )
+            )
+            sys.exit(1)
 
     def get_logging(self):
         """Get a logging class.

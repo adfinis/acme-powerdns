@@ -26,6 +26,7 @@ from acme_powerdns import acme_client, cert_handling, config, dns, settings
 
 def renew_certificates():
     cfg = config.Config()
+    cfg.argparse()
     logging = cfg.get_logging()
 
     ac = acme_client.Account(

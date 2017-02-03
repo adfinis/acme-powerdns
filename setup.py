@@ -31,6 +31,7 @@ setup(
     install_requires=[
         'acme',
         'dnspython',
+        'PyYAML',
     ],
     extras_require={
         'test': ['pytest'],
