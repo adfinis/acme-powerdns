@@ -18,15 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import logging
 import sys
 
 from OpenSSL import crypto
-from acme_powerdns import acme_client, cert_handling, dns, settings
+from acme_powerdns import acme_client, cert_handling, config, dns, settings
 
 
 def renew_certificates():
-    logging.basicConfig(level=logging.INFO)
+    cfg = config.Config()
+    logging = cfg.get_logging()
 
     ac = acme_client.Account(
         logging,
