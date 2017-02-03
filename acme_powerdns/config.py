@@ -32,7 +32,7 @@ class Config:
         logging.basicConfig(level=logging.INFO)
         self._logging = logging.getLogger(__name__)
 
-    def argparse(self):
+    def argparse(self, args):
         """Parse arguments from cli.
 
         :param list args: argument list from program call.
@@ -58,7 +58,10 @@ class Config:
             DEBUG, INFO, WARN, ERROR, CRITICAL
             """
         )
-        argp = parser.parse_args()
+        if args:
+            argp = parser.parse_args(args)
+        else:
+            argp = parser.parse_args()
 
         # set log level
         self._logging.setLevel(argp.loglevel)

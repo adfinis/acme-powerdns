@@ -25,6 +25,6 @@ __pycache__/
 *.crt
 *.pem
 *.ext
-!/.testenv/cert.key
-!/.testenv/cert.csr
-!/.testenv/cert.pem
+!/.testdata/*.key
+!/.testdata/*.csr
+!/.testdata/*.pem

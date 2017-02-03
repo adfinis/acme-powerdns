@@ -7,4 +7,6 @@ from acme_powerdns import cli
 
 
 def test_cli_main():
-    cli.renew_certificates()
+    cli.renew_certificates([
+        '-c', '.testdata/settings.yml'
+    ])

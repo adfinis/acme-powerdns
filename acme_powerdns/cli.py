@@ -24,9 +24,9 @@ from OpenSSL import crypto
 from acme_powerdns import acme_client, cert_handling, config, dns, settings
 
 
-def renew_certificates():
+def renew_certificates(args=None):
     cfg = config.Config()
-    cfg.argparse()
+    cfg.argparse(args)
     logging = cfg.get_logging()
 
     ac = acme_client.Account(
