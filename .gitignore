@@ -19,12 +19,13 @@ __pycache__/
 # project stuff
 /acme_powerdns/settings.py
 
+# test environment
+/.testdata/hid.sh
+/.testdata/.venv
+
 # keys, signing requests and certificates
 *.key
 *.csr
 *.crt
 *.pem
 *.ext
-!/.testdata/*.key
-!/.testdata/*.csr
-!/.testdata/*.pem
