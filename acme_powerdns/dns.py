@@ -23,26 +23,28 @@ from dns import query, tsig, tsigkeyring, update
 
 class NSUpdate:
 
-    def __init__(self, logging, keyid, key, algo):
+    def __init__(self, logging, server, keyid, key, algo, zone):
         self._logging = logging
+        self._server = server
         self._algo = algo
         self._keyid = keyid
         self._key = key
+        self._zone = zone
         self._keyring = tsigkeyring.from_text({
             keyid: key
         })
 
-    def create(self, server, zone, record, rdata):
+    def create(self, record, rdata):
         self._logging.info(
             'add record [{0}] in zone [{1}] on [{2}] with rdata [{3}]'.format(
                 record,
-                zone,
-                server,
+                self._zone,
+                self._server,
                 rdata,
             )
         )
         data = update.Update(
-            zone,
+            self._zone,
             keyname=self._keyid,
             keyring=self._keyring,
             keyalgorithm=getattr(tsig, self._algo),
@@ -55,20 +57,20 @@ class NSUpdate:
         )
         response = query.udp(
             data,
-            server,
+            self._server,
         )
         return response
 
-    def delete(self, server, zone, record, rdata):
+    def delete(self, record, rdata):
         self._logging.info(
             'delete record [{0}] in zone [{1}] on [{2}]'.format(
                 record,
-                zone,
-                server,
+                self._zone,
+                self._server,
             )
         )
         data = update.Update(
-            zone,
+            self._zone,
             keyname=self._keyid,
             keyring=self._keyring,
             keyalgorithm=getattr(tsig, self._algo),
@@ -80,6 +82,6 @@ class NSUpdate:
         )
         response = query.udp(
             data,
-            server,
+            self._server,
         )
         return response
