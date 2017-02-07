@@ -25,9 +25,26 @@ from acme_powerdns import acme_client, cert_handling
 
 
 class DirectoryHandling:
+    """Handle a directory with certificate signing requests.
+
+    Each certificate signing request inside this directory will be validated
+    and the corresponding certificate will be stored inside another directory.
+
+    :ivar logging logging: a logging object.
+    :ivar str directory_url: url to the acme directory.
+    :ivar str account_key: account key filename (a X509 private key in PEM
+        format).
+    :ivar str csr_dir: directory to search for certificate signing requests.
+    :ivar str crt_topdir: certificate top directory (each csr will get a
+        subdirectory).
+    :ivar int days: number of days until enddate before a certificate get
+        renewed.
+    :ivar NSUpdate nsupdate: a NSUpdate object to create and delete dns
+        entries.
+    """
 
     def __init__(self, logging, directory_url, account_key, csr_dir,
-                 cert_topdir, days=60, nsupdate=None):
+                 cert_topdir, days=30, nsupdate=None):
 
         self._logging = logging
         self._directory_url = directory_url
@@ -39,7 +56,11 @@ class DirectoryHandling:
         self._ac = None
 
     def get_account(self):
+        """Get a registered acme account.
 
+        :returns: a registered acme account object.
+        :rtype: :class:`acme_powerdns.acme_client.Account`
+        """
         if self._ac is None:
             self._ac = acme_client.Account(
                 self._logging,
@@ -54,6 +75,8 @@ class DirectoryHandling:
         return self._ac
 
     def handle(self):
+        """Handle the directory and validate each certificate signing request.
+        """
 
         for csr in os.listdir(self._csr_dir):
             # calculate csr filename
