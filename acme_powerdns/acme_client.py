@@ -126,7 +126,7 @@ class Account:
         """Get account registration resource.
 
         :returns: account registration resource.
-        :rtype: acme.messages.RegistrationResource
+        :rtype: :class:`acme.messages.RegistrationResource`
         """
 
         return self._regr
@@ -135,7 +135,7 @@ class Account:
         """Get acme client object.
 
         :returns: account client object.
-        :rtype: acme.client.Client
+        :rtype: :class:`acme.client.Client`
         """
 
         return self._acme
@@ -144,7 +144,7 @@ class Account:
         """Get loaded account key.
 
         :returns: account key.
-        :rtype: acme.jose.jwk.JWKRSA
+        :rtype: :class:`acme.jose.jwk.JWKRSA`
         """
 
         return self._account_key
