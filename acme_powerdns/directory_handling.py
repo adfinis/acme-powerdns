@@ -94,6 +94,7 @@ class DirectoryHandling:
             # calculate cert filename
             cn = cert_handle.get_common_name()
             crt = os.path.join(self._cert_topdir, cn, 'cert.pem')
+            cert_handle.set_cert(crt)
             self._logging.debug(
                 'certificate filename: {0}'.format(crt)
             )
