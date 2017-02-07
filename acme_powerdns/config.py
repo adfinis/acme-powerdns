@@ -90,3 +90,15 @@ class Config:
         """
 
         return self._logging
+
+    def get(self, key):
+        """Get a key from configuration.
+
+        :param string key: key name to get.
+        :returns: value
+        :rtype: string
+        """
+
+        if key not in self._conf:
+            raise KeyError('Key {0} not in configuration'.format(key))
+        return self._conf[key]
