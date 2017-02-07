@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x
 
 # cd to project directory
 cd "$(readlink -f "$(dirname "$0")/..")" || exit 1
@@ -13,10 +14,10 @@ if [ ! -e .testdata/.venv ]; then
 fi
 
 # create certificate stuff
-mkdir -p .testdata/www.example.com
-if [ ! -f .testdata/www.example.com/cert.pem ]; then
+mkdir -p .testdata/csr
+mkdir -p .testdata/live/www.example.com
 
-    cat <<__EOF__ > .testdata/x509.ext
+cat <<__EOF__ > .testdata/x509.ext
 [req]
 distinguished_name = req_distinguished_name
 req_extensions = v3_req
@@ -41,11 +42,13 @@ DNS.1 = www.example.com
 DNS.2 = mail.example.com
 __EOF__
 
+if [ ! -f .testdata/account.key ]; then
     openssl genrsa -out .testdata/account.key 4096
+fi
+
+if [ ! -f .testdata/csr/www.example.com.csr ]; then
     openssl req -new -sha256 -nodes -newkey rsa:4096 \
         -config .testdata/x509.ext \
         -keyout .testdata/live/www.example.com/privkey.pem \
         -out .testdata/csr/www.example.com.csr
 fi
-
-make test
