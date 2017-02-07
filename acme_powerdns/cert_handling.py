@@ -28,15 +28,28 @@ from OpenSSL import crypto
 class CertHandling:
     """Handle one certificate.
     Load and handle certificate and signing request.
-
-    :ivar string csr: certificate signing request filename.
-    :ivar string crt: certificate filename.
     """
 
-    def __init__(self, csr, crt):
+    def __init__(self):
+        self._csr_file = None
+        self._crt_file = None
+
+    def set_csr(self, csr):
+        """Set the certificate signing request filename for this object.
+
+        :param str csr: certificate signing request filename.
+        """
+
         self._csr_file = csr
-        self._crt_file = crt
         self._csr = self.load_cert_req()
+
+    def set_cert(self, crt):
+        """Set the certificate filename for this object.
+
+        :param str crt: certificate filename.
+        """
+
+        self._crt_file = crt
         self._crt = self.load_cert()
 
     def load_cert_req(self) -> crypto.X509Req:
