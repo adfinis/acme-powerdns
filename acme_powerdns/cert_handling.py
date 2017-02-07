@@ -61,6 +61,11 @@ class CertHandling:
         :rtype: :class:`OpenSSL.crypto.X509Req`
         """
 
+        if self._csr_file is None:
+            raise ValueError('certificate request {0} not set'.format(
+                self._csr_file,
+            ))
+
         if os.path.isfile(self._csr_file):
             with open(self._csr_file, 'rb') as fp:
                 csr = crypto.load_certificate_request(
@@ -79,6 +84,11 @@ class CertHandling:
         :returns: Certificate.
         :rtype: :class:`OpenSSL.crypto.X509`
         """
+
+        if self._crt_file is None:
+            raise ValueError('certificate {0} not set'.format(
+                self._crt_file,
+            ))
 
         if os.path.isfile(self._crt_file):
             with open(self._crt_file, 'rb') as fp:
