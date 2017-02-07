@@ -112,6 +112,15 @@ class CertHandling:
         else:
             return 0
 
+    def get_common_name(self) -> str:
+        """Get subject common name from certificate signing request.
+
+        :returns: Subject string.
+        :rtype: `str`.
+        """
+
+        return self._csr.get_subject().commonName
+
     def get_alternative_names(self) -> list:
         """Get Subject Alternative Names from certificate.
 
