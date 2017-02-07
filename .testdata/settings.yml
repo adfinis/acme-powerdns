@@ -1,10 +1,11 @@
 ---
 
-cert_dir:
-  - directory_url: 'https://acme-staging.api.letsencrypt.org/directory'
-    days: 90
-    account: .testdata/account.key
-    csr:     .testdata/csr
-    cert:    .testdata/live
+directory_url: 'https://acme-staging.api.letsencrypt.org/directory'
+days: 90
+
+directories:
+  - account_key: .testdata/account.key
+    csr:         .testdata/csr
+    cert:        .testdata/live
 
 # vim: set ft=yaml sw=2 ts=2 et wrap tw=76:
