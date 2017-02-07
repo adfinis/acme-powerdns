@@ -20,7 +20,7 @@
 
 import sys
 
-from acme_powerdns import directory_handling, config, dns
+from acme_powerdns import config, directory_handling, dns
 
 
 def renew_certificates(args=None):
