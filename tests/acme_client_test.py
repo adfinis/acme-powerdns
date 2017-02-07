@@ -22,7 +22,7 @@ def account():
         log(),
         'https://acme-staging.api.letsencrypt.org/directory',
     )
-    ac.create_account('.testenv/cert.key')
+    ac.create_account('.testdata/account.key')
     return ac
 
 
