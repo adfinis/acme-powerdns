@@ -12,7 +12,7 @@ from acme_powerdns import cert_handling
 @pytest.fixture(scope='session')
 def crth():
     ch = cert_handling.CertHandling()
-    ch.set_csr('.testdata/csr/cert.csr')
+    ch.set_csr('.testdata/csr/www.example.com.csr')
     ch.set_cert('.testdata/live/www.test.subpage.ch/cert.pem')
     return ch
 
