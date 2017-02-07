@@ -11,9 +11,7 @@ include pyproject/docker.mk
 TESTDIR := .
 
 # overwrite pytest
-pytest: mypytest .requirements.txt .deps/pytest  .deps/coverage .deps/pytest_cov
-
-mypytest:
+pytest: .requirements.txt .deps/pytest  .deps/coverage .deps/pytest_cov
 	rm -f *.so *.dylib
 	pip install --upgrade -r .requirements.txt -e .
 	py.test --cov-report term-missing --cov=$(PROJECT) --no-cov-on-fail $(TESTDIR)
