@@ -33,6 +33,8 @@ class CertHandling:
     def __init__(self):
         self._csr_file = None
         self._crt_file = None
+        self._csr = None
+        self._crt = None
 
     def set_csr(self, csr):
         """Set the certificate signing request filename for this object.
