@@ -20,8 +20,7 @@
 
 import sys
 
-from OpenSSL import crypto
-from acme_powerdns import acme_client, cert_handling, config, dns, settings
+from acme_powerdns import directory_handling, config, dns
 
 
 def renew_certificates(args=None):
@@ -29,68 +28,27 @@ def renew_certificates(args=None):
     cfg.argparse(args)
     logging = cfg.get_logging()
 
-    ac = acme_client.Account(
-        logging,
-        settings.DIRECTORY_URL,
-    )
     nsupdate = dns.NSUpdate(
         logging,
-        settings.TSIG_KEYID,
-        settings.TSIG_KEY,
-        settings.TSIG_ALGO,
+        cfg.get()['nsupdate']['server'],
+        cfg.get()['nsupdate']['tsig']['keyid'],
+        cfg.get()['nsupdate']['tsig']['key'],
+        cfg.get()['nsupdate']['tsig']['algo'],
+        cfg.get()['nsupdate']['zone'],
     )
 
-    # create an ACME account
-    ac.create_account(
-        settings.ACCOUNT_KEY,
-    )
-
-    # load CSRs
-    csr = cert_handling.CertHandling(
-        settings.CSR,
-        settings.CRT,
-    )
-
-    fqdn = csr.get_alternative_names()
-
-    logging.info('Certificate {0} expires in {1} days'.format(
-        settings.CRT,
-        csr.enddate(),
-    ))
-    if csr.enddate() < settings.DAYS:
-        # create certificate request
-        cr = acme_client.CertRequest(ac)
-        tokens = cr.request_tokens(
-            fqdn,
-            'dns01',
+    directories = cfg.get()['directories']
+    for directory in directories:
+        dir_handle = directory_handling.DirectoryHandling(
+            logging,
+            cfg.get()['directory_url'],
+            directory['account_key'],
+            directory['csr'],
+            directory['cert'],
+            cfg.get()['days'],
+            nsupdate,
         )
-
-        for token in tokens:
-            # create dns record
-            nsupdate.create(
-                settings.SERVER,
-                settings.ZONE,
-                '_acme-challenge.{0}'.format(token['domain']),
-                token['validation'],
-            )
-        cert, chain = cr.answer_challenges(
-            csr._csr,
-        )
-        with open(settings.CRT, 'wb') as f:
-            for crt in cert:
-                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
-        with open(settings.CHAIN, 'wb') as f:
-            for crt in chain:
-                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
-
-        for token in tokens:
-            # delete dns record
-            nsupdate.delete(
-                settings.SERVER,
-                settings.ZONE,
-                '_acme-challenge.{0}'.format(token['domain']),
-                token['validation'],
-            )
+        dir_handle.handle()
 
 
 def main():
