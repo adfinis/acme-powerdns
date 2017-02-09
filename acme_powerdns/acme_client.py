@@ -19,15 +19,11 @@
 #
 
 """
-import logging
 from OpenSSL import crypto
 from acme_powerdns import acme_client
 
 
-logging.basicConfig(level=logging.INFO)
-
 ac = acme_client.Account(
-    logging,
     'https://acme-staging.api.letsencrypt.org/directory'
 )
 
@@ -37,6 +33,11 @@ ac.create_account(
 )
 
 # create certificate request
+with open('cert.csr', 'rb') as fp:
+    csr = crypto.load_certificate_request(
+        crypto.FILETYPE_PEM,
+        fp.read()
+    )
 cr = acme_client.CertRequest(ac)
 tokens = cr.request_tokens(
     [
@@ -50,20 +51,15 @@ for token in tokens:
     # TODO: create all tokens
     # save the token['validation'] for each token['domain']
 
-with open(settings.CSR, 'rb') as fp:
-    csr = crypto.load_certificate_request(
-        crypto.FILETYPE_PEM,
-        fp.read()
-    )
 cert, chain = cr.answer_challenges(
     csr,
 )
-with open(settings.CRT, 'wb') as f:
+with open('cert.pem', 'wb') as fp:
     for crt in cert:
-        f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
-with open(settings.CHAIN, 'wb') as f:
+        fp.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+with open('chain.pem', 'wb') as fp:
     for crt in chain:
-        f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
+        fp.write(crypto.dump_certificate(crypto.FILETYPE_PEM, crt))
 
 for token in tokens:
     # TODO: create all tokens
