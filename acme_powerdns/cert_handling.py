@@ -18,6 +18,53 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""
+# get a cert handle
+cert_handle = cert_handling.CertHandling()
+cert_handle.set_csr('cert.csr')
+
+cn = cert_handle.get_common_name()
+crt = os.path.join(cn, 'cert.pem')
+chain = os.path.join(cn, 'chain.pem')
+fqdn = cert_handle.get_alternative_names()
+cert_handle.set_cert(crt)
+
+if cert_handle.enddate() < 30:
+    # create certificate request
+    cr = acme_client.CertRequest(self.get_account())
+    tokens = cr.request_tokens(
+        fqdn,
+        'dns01',
+    )
+
+    # create dns record
+    for token in tokens:
+        # TODO: create all tokens
+        # save the token['validation'] for each token['domain']
+
+    cert, chain = cr.answer_challenges(
+        cert_handle._csr,
+    )
+    # write certificate content to file
+    with open(crt, 'wb') as f:
+        for crt in cert:
+            f.write(crypto.dump_certificate(
+                crypto.FILETYPE_PEM,
+                crt,
+            ))
+    # write chain content to file
+    with open(chain, 'wb') as f:
+        for crt in chain:
+            f.write(crypto.dump_certificate(
+                crypto.FILETYPE_PEM,
+                crt,
+            ))
+
+    for token in tokens:
+        # TODO: create all tokens
+        # delete the token['validation'] for each token['domain']
+"""
+
 import os
 from datetime import datetime
 
