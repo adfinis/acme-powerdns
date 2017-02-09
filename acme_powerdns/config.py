@@ -47,7 +47,7 @@ class Config:
             "-c", "--config",
             required=False,
             metavar="FILE",
-            default="/etc/acme_powerdns/config.yml",
+            default="/etc/acme-powerdns/config.yml",
             help="Configuration file",
         )
         parser.add_argument(
