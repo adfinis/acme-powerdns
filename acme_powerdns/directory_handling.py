@@ -18,9 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
 import os
 
 from OpenSSL import crypto
+
 from acme_powerdns import acme_client, cert_handling
 
 
@@ -30,7 +32,6 @@ class DirectoryHandling:
     Each certificate signing request inside this directory will be validated
     and the corresponding certificate will be stored inside another directory.
 
-    :ivar logging logging: a logging object.
     :ivar str directory_url: url to the acme directory.
     :ivar str account_key: account key filename (a X509 private key in PEM
         format).
@@ -43,10 +44,10 @@ class DirectoryHandling:
         entries.
     """
 
-    def __init__(self, logging, directory_url, account_key, csr_dir,
+    def __init__(self, directory_url, account_key, csr_dir,
                  cert_topdir, days=30, nsupdate=None):
 
-        self._logging = logging
+        self._logging = logging.getLogger(__name__)
         self._directory_url = directory_url
         self._account_key = account_key
         self._days = days
@@ -63,7 +64,6 @@ class DirectoryHandling:
         """
         if self._ac is None:
             self._ac = acme_client.Account(
-                self._logging,
                 self._directory_url,
             )
 

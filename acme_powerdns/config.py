@@ -82,15 +82,6 @@ class Config:
             )
             sys.exit(1)
 
-    def get_logging(self):
-        """Get a logging class.
-
-        :returns: logging class
-        :rtype: :class:`logging`
-        """
-
-        return self._logging
-
     def get(self):
         """Get configuration.
 

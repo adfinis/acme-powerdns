@@ -18,13 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
+
 from dns import query, tsig, tsigkeyring, update
 
 
 class NSUpdate:
 
-    def __init__(self, logging, server, keyid, key, algo, zone):
-        self._logging = logging
+    def __init__(self, server, keyid, key, algo, zone):
+        self._logging = logging.getLogger(__name__)
         self._server = server
         self._algo = algo
         self._keyid = keyid

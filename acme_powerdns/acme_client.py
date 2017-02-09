@@ -70,6 +70,8 @@ for token in tokens:
     # delete the token['validation'] for each token['domain']
 """
 
+import logging
+
 from acme import challenges, client, jose, messages
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
@@ -78,12 +80,11 @@ from cryptography.hazmat.primitives import serialization
 class Account:
     """Create account at the directory.
 
-    :ivar logging logging: a logging object.
     :ivar string directory_url: acme directory url.
     """
 
-    def __init__(self, logging, directory_url):
-        self._logging = logging
+    def __init__(self, directory_url):
+        self._logging = logging.getLogger(__name__)
         self._acme = None
         self._directory_url = directory_url
 

@@ -5,21 +5,13 @@
 
 import pytest
 
-import logging
 import acme
 from acme_powerdns import acme_client
-
-
-@pytest.fixture(scope='session')
-def log():
-    logging.basicConfig(level=logging.WARNING)
-    return logging
 
 
 @pytest.fixture(autouse=True, scope='session')
 def account():
     ac = acme_client.Account(
-        log(),
         'https://acme-staging.api.letsencrypt.org/directory',
     )
     ac.create_account('.testdata/account.key')

@@ -26,10 +26,8 @@ from acme_powerdns import config, directory_handling, dns
 def renew_certificates(args=None):
     cfg = config.Config()
     cfg.argparse(args)
-    logging = cfg.get_logging()
 
     nsupdate = dns.NSUpdate(
-        logging,
         cfg.get()['nsupdate']['server'],
         cfg.get()['nsupdate']['tsig']['keyid'],
         cfg.get()['nsupdate']['tsig']['key'],
@@ -40,7 +38,6 @@ def renew_certificates(args=None):
     directories = cfg.get()['directories']
     for directory in directories:
         dir_handle = directory_handling.DirectoryHandling(
-            logging,
             cfg.get()['directory_url'],
             directory['account_key'],
             directory['csr'],
