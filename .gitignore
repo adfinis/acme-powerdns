@@ -22,6 +22,7 @@ __pycache__/
 # test environment
 /.testdata/hid.sh
 /.testdata/.venv
+/.testdata/settings.yml
 
 # keys, signing requests and certificates
 *.key

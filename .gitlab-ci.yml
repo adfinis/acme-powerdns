@@ -5,6 +5,7 @@ before_script:
   - source /etc/profile
   - git submodule update --init
   - pyenv local 3.5.1
+  - echo "$ACME_POWERDNS_SETTINGS" > .testdata/settings.yml
   - .testdata/run.sh
 
 stages:
