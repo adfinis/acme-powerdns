@@ -158,7 +158,7 @@ class CertRequest:
         self._acme = client.get_client()
         self._regr = client.get_regr()
         self._account_key = client.get_account_key()
-        self._challenges = list()
+        self._challenges = []
 
     def request_tokens(self, domains, ctype) -> list:
         """Request tokens for a list of domains.
@@ -170,7 +170,7 @@ class CertRequest:
         :returns: a list of dicts with domain and token.
         :rtype: list
         """
-        tokens = list()
+        tokens = []
         try:
             challenge_class = {
                 'dns01': challenges.DNS01,
@@ -228,7 +228,7 @@ class CertRequest:
         :returns: certificate and certificate chain.
         :rtype: tuple
         """
-        authzrs = list()
+        authzrs = []
         for authzr in self._challenges:
             try:
                 self._acme.answer_challenge(
