@@ -5,8 +5,8 @@ ACME PowerDNS
 ACME PowerDNS is a `Let's Encrypt`_ client which makes the `ACME`_ challenge
 response with PowerDNS. The big benefit of doing the ACME challenge response
 over DNS is, that a central server can validate each certificate signing
-request without access to the webservers. There is also no modification
-needed on the webserver.
+request without access to the web-servers. There is also no modification
+needed on the web-server.
 
 
 REQUIREMENTS
@@ -60,13 +60,13 @@ USAGE
 =====
 The command ``acme-powerdns`` will do the following:
 
-1. search for files inside the csr directories (setting ``directories`` ->
+1. Search for files inside the csr directories (setting ``directories`` ->
    ``csr``).
-#. read those files as certificate signing request (be aware, no other
+#. Read those files as certificate signing request (be aware, no other
    files are allowed inside the csr directories).
-#. validate the dns entries of each csr.
-#. get certificates from acme directory (e.g. `Let's Encrypt`_).
-#. store certificates to cert directories (setting ``directories`` ->
+#. Validate the dns entries of each csr.
+#. Get certificates from acme directory (e.g. `Let's Encrypt`_).
+#. Store certificates to cert directories (setting ``directories`` ->
    ``cert``).
 
 
