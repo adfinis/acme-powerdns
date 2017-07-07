@@ -12,7 +12,7 @@ needed on the web-server.
 REQUIREMENTS
 ============
 
-* Python > 3.4
+* Python >= 3.4
 
 
 INSTALLATION
