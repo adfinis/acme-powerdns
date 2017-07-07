@@ -20,6 +20,7 @@
 
 import logging
 
+import requests
 from dns import query, tsig, tsigkeyring, update
 
 
@@ -87,3 +88,27 @@ class NSUpdate:
             self._server,
         )
         return response
+
+
+class PowerDNS_API:
+
+    def __init__(self, server, username, password):
+        self._logging = logging.getLogger(__name__)
+        self._server = server
+        self._username = username
+        self._password = password
+        r = requests.get(
+            self._server,
+            data={
+                'username': self._username,
+                'password': self._password,
+            },
+        )
+        self._token = r
+        self._logging.info(self._token)
+
+    def create(self, record, rdata):
+        pass
+
+    def delete(self, record, rdata):
+        pass

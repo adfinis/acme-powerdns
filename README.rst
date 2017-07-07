@@ -44,6 +44,12 @@ Create your configuration file ``/etc/acme-powerdns/settings.yml``:
 
   directory_url: 'https://acme-staging.api.letsencrypt.org/directory'
   days: 30
+  updater: powerdns
+
+  powerdns:
+    server: 'https://api.example.com/'
+    username: '<user>'
+    password: '<password>'
 
   directories:
     - account_key: /etc/acme-powerdns/account.key

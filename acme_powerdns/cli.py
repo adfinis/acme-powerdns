@@ -27,13 +27,25 @@ def renew_certificates(args=None):
     cfg = config.Config()
     cfg.argparse(args)
 
-    nsupdate = dns.NSUpdate(
-        cfg.get()['nsupdate']['server'],
-        cfg.get()['nsupdate']['tsig']['keyid'],
-        cfg.get()['nsupdate']['tsig']['key'],
-        cfg.get()['nsupdate']['tsig']['algo'],
-        cfg.get()['nsupdate']['zone'],
-    )
+    if cfg.get()['updater'] == 'powerdns':
+        updater = dns.PowerDNS_API(
+            cfg.get()['powerdns']['server'],
+            cfg.get()['powerdns']['username'],
+            cfg.get()['powerdns']['password'],
+        )
+    elif cfg.get()['updater'] == 'nsupdate':
+        updater = dns.NSUpdate(
+            cfg.get()['nsupdate']['server'],
+            cfg.get()['nsupdate']['tsig']['keyid'],
+            cfg.get()['nsupdate']['tsig']['key'],
+            cfg.get()['nsupdate']['tsig']['algo'],
+            cfg.get()['nsupdate']['zone'],
+        )
+    else:
+        sys.stderr.write('False configuration option: updater="{0}"\n'.format(
+            cfg.get()['updater'],
+        ))
+        sys.exit(1)
 
     directories = cfg.get()['directories']
     for directory in directories:
@@ -43,7 +55,7 @@ def renew_certificates(args=None):
             directory['csr'],
             directory['cert'],
             cfg.get()['days'],
-            nsupdate,
+            updater,
         )
         dir_handle.handle()
 

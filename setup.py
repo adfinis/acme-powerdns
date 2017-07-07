@@ -9,7 +9,7 @@ with codecs_open('README.rst', encoding='utf-8') as f:
 
 setup(
     name='acme_powerdns',
-    version='0.1',
+    version='0.2',
     description='ACME client with DNS challenge response with PowerDNS',
     long_description=LONG_DESCRIPTION,
     classifiers=[
@@ -32,6 +32,7 @@ setup(
         'acme',
         'dnspython',
         'PyYAML',
+        'requests',
     ],
     extras_require={
         'test': ['pytest'],
