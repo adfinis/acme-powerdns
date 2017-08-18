@@ -89,3 +89,11 @@ class Config:
         :rtype: dict
         """
         return self._conf
+
+    def loglevel(self):
+        """Get log level.
+
+        :returns: log level.
+        :rtype: logging
+        """
+        return self._logging.getEffectiveLevel()

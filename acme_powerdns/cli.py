@@ -32,6 +32,8 @@ def renew_certificates(args=None):
             cfg.get()['powerdns']['server'],
             cfg.get()['powerdns']['username'],
             cfg.get()['powerdns']['password'],
+            cfg.get()['powerdns']['domain'],
+            cfg.loglevel(),
         )
     elif cfg.get()['updater'] == 'nsupdate':
         updater = dns.NSUpdate(
@@ -40,6 +42,7 @@ def renew_certificates(args=None):
             cfg.get()['nsupdate']['tsig']['key'],
             cfg.get()['nsupdate']['tsig']['algo'],
             cfg.get()['nsupdate']['zone'],
+            cfg.loglevel(),
         )
     else:
         sys.stderr.write('False configuration option: updater="{0}"\n'.format(

@@ -26,13 +26,22 @@ from dns import query, tsig, tsigkeyring, update
 
 class NSUpdate:
 
-    def __init__(self, server, keyid, key, algo, zone):
+    def __init__(
+            self,
+            server,
+            keyid,
+            key,
+            algo,
+            zone,
+            loglevel=logging.INFO,
+    ):
         self._logging = logging.getLogger(__name__)
-        self._server = server
-        self._algo = algo
-        self._keyid = keyid
-        self._key = key
-        self._zone = zone
+        self._logging.setLevel(loglevel)
+        self._server  = server
+        self._algo    = algo
+        self._keyid   = keyid
+        self._key     = key
+        self._zone    = zone
         self._keyring = tsigkeyring.from_text({
             keyid: key
         })
@@ -92,13 +101,21 @@ class NSUpdate:
 
 class PowerDNS_API:
 
-    def __init__(self, server, username, password):
-        self._logging = logging.getLogger(__name__)
-        self._server = server
-        self._username = username
-        self._password = password
-        r = requests.get(
-            self._server,
+    def __init__(
+            self,
+            server,
+            username,
+            password,
+            domain,
+            loglevel=logging.INFO,
+    ):
+        self._logging   = logging.getLogger(__name__)
+        self._logging.setLevel(loglevel)
+        self._server    = '{0}'.format(server)
+        self._username  = '{0}'.format(username)
+        self._password  = '{0}'.format(password)
+        self._domain    = '{0}'.format(domain)
+
             data={
                 'username': self._username,
                 'password': self._password,
