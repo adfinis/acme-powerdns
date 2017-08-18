@@ -116,16 +116,60 @@ class PowerDNS_API:
         self._password  = '{0}'.format(password)
         self._domain    = '{0}'.format(domain)
 
-            data={
-                'username': self._username,
-                'password': self._password,
-            },
-        )
-        self._token = r
-        self._logging.info(self._token)
+        try:
+            r = requests.post(
+                '{0}/api-token-auth/'.format(self._server),
+                data={
+                    'username': self._username,
+                    'password': self._password,
+                },
+            )
+            if not r.ok:
+                self._logging.error('{0} returned {1}'.format(
+                    r.url,
+                    r.status_code,
+                ))
+            self._logging.debug('Token response: {0}'.format(r.json()))
+            self._token = r.json()['token']
+            self._logging.info('Token: {0}'.format(self._token))
+        except BaseException as e:
+            self._logging.error('{0}'.format(e))
 
     def create(self, record, rdata):
-        pass
+        r = requests.post(
+            '{0}/v1/records/'.format(self._server),
+            headers={
+                'Authorization': 'JWT {0}'.format(self._token),
+            },
+            data={
+                'name': '{0}'.format(record),
+                'type': 'TXT',
+                'content': '{0}'.format(rdata),
+                'domain': '{0}'.format(self._domain),
+            },
+        )
+        self._logging.debug('Record created: {0}'.format(r.json()))
 
     def delete(self, record, rdata):
-        pass
+        """Retrieve full record"""
+        r = requests.post(
+            '{0}/v1/records/'.format(self._server),
+            headers={
+                'Authorization': 'JWT {0}'.format(self._token),
+            },
+            data={
+                'domain': self._domain,
+                'name': record,
+            },
+        )
+        self._logging.debug('Record to delete: {0}'.format(r.json()))
+        record_id = r.json()['id']
+
+        """Remove record by id"""
+        r = requests.delete(
+            '{0}/v1/records/{1}/'.format(self._server, record_id),
+            headers={
+                'Authorization': 'JWT {0}'.format(self._token),
+            },
+        )
+        self._logging.debug('Record ID deleted: {0}'.format(record_id))
